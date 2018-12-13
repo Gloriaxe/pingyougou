@@ -4,112 +4,32 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>品牌管理</title>
-<meta
-	content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
-	name="viewport">
-<link rel="stylesheet" href="../plugins/bootstrap/css/bootstrap.min.css">
-<link rel="stylesheet" href="../plugins/adminLTE/css/AdminLTE.css">
-<link rel="stylesheet"
-	href="../plugins/adminLTE/css/skins/_all-skins.min.css">
-<link rel="stylesheet" href="../css/style.css">
-<link rel="stylesheet" href="../plugins/angularjs/pagination.css">
-<script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>
-<script src="../plugins/bootstrap/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="../plugins/angularjs/angular.min.js"></script>
-<script type="text/javascript" src="../plugins/angularjs/pagination.js"></script>
-<script type="text/javascript">
-	var app = angular.module("pyg", [ "pagination" ]);
-	app.controller("BrandController",function($scope, $http) {
-						$scope.findPage = function(page, rows) {
-							$http.get("../brand/findPage.do?page=" + page
-													+ "&rows=" + rows + "").success(
-											function(response) {
-												$scope.list = response.rows;
-												$scope.paginationConf.totalItems = response.total;
-											})
-						}
-
-						$scope.paginationConf = {
-							currentPage : 1,
-							totalItems : 10,
-							itemsPerPage : 5,
-							perPageOptions : [ 5, 10, 15, 20 ],
-							onChange : function() {
-								$scope.pageLoad();
-							}
-						}
-
-						//刷新页面
-						$scope.pageLoad = function() {
-							$scope.search($scope.paginationConf.currentPage,
-									$scope.paginationConf.itemsPerPage);
-						}
-
-						$scope.save = function() {
-							$http.post("../brand/save.do", $scope.entity)
-									.success(function(response) {
-										if (response.success) {
-
-											$scope.pageLoad();
-										} else {
-											alert(response.message);
-										}
-									})
-						}
-						//修改的回显数据
-						$scope.entity = {};
-						$scope.show = function(entity) {
-							$scope.entity.id = entity.id;
-							$scope.entity.name = entity.name;
-							$scope.entity.firstChar = entity.firstChar;
-						}
-
-						//点击复选框将ID存到数组中
-						$scope.ids = [];
-						$scope.updateSelection = function($event, id) {
-							if ($event.target.checked) {
-								//如果点击之后是选中，将id添加刀ids中
-								$scope.ids.push(id);
-							} else {
-								//如果没被选中，将id从ids中删除;
-								var index = $scope.ids.indexOf(id);
-								$scope.ids.splice(index, 1);
-							}
-						}
-
-						//删除选中
-						$scope.del = function() {
-							$http.get("../brand/del.do?ids=" + $scope.ids)
-									.success(function(response) {
-										if (response.success) {
-
-											$scope.pageLoad();
-										} else {
-											alert(response.message);
-										}
-									})
-						}
-
-						//模糊查询
-						$scope.searchEntity={};
-						//条件查询 
-						$scope.search=function(page,size){
-							
-							$http.post('../brand/search.do?page='+page +'&size='+size, $scope.searchEntity).success(
-								function(response){
-									$scope.list=response.rows;//显示当前页数据 	
-									$scope.paginationConf.totalItems=response.total;//更新总记录数 
-								}		
-							);	
-							
-						}
-
-					})
-</script>
+   <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>品牌管理</title>
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="../plugins/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../plugins/adminLTE/css/AdminLTE.css">
+    <link rel="stylesheet" href="../plugins/adminLTE/css/skins/_all-skins.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+	<script src="../plugins/jQuery/jquery-2.2.3.min.js"></script>
+    <script src="../plugins/bootstrap/js/bootstrap.min.js"></script>
+	
+	<script type="text/javascript" src="../plugins/angularjs/angular.min.js"></script>
+	
+	<!-- 分页组件开始 -->
+	<script src="../plugins/angularjs/pagination.js"></script>
+	<link rel="stylesheet" href="../plugins/angularjs/pagination.css">
+	<!-- 分页组件结束 -->
+	
+	<script type="text/javascript" src="../js/base_pagination.js"></script>
+	<script type="text/javascript" src="../js/service/brandService.js"></script>
+	<script type="text/javascript" src="../js/controller/baseController.js"></script>
+	<script type="text/javascript" src="../js/controller/brandController.js"></script>
 
 </head>
 <body class="hold-transition skin-red sidebar-mini" ng-app="pyg"
-	ng-controller="BrandController">
+	ng-controller="brandController">
 	<!-- .box-body -->
 	<div class="box-header with-border">
 		<h3 class="box-title">品牌管理</h3>
@@ -129,7 +49,7 @@
 							<i class="fa fa-file-o"></i> 新建
 						</button>
 						<button type="button" class="btn btn-default" title="删除"
-							ng-click="del()">
+							ng-click="dele()">
 							<i class="fa fa-trash-o"></i> 删除
 						</button>
 						<button type="button" class="btn btn-default" title="刷新"
@@ -143,7 +63,7 @@
 				<div class="has-feedback">
 					品牌名称:<input ng-model="searchEntity.name"> 品牌首字母:<input
 						ng-model="searchEntity.firstChar">
-					<button class="btn btn-default" ng-click="pageLoad()">查询</button>
+					<button class="btn btn-default" ng-click="reloadList()">查询</button>
 				</div>
 			</div>
 			<!--工具栏/-->
@@ -171,7 +91,7 @@
 						<td class="text-center">
 							<button type="button" class="btn bg-olive btn-xs"
 								data-toggle="modal" data-target="#editModal"
-								ng-click="show(entity)">修改</button>
+								ng-click="findOne(entity.id)">修改</button>
 						</td>
 					</tr>
 
@@ -184,7 +104,7 @@
 		</div>
 		<!-- 数据表格 /-->
 
-		{{ids}}
+	
 		<tm-pagination conf="paginationConf"></tm-pagination>
 
 

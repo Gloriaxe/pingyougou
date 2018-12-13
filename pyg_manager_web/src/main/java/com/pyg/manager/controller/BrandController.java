@@ -1,6 +1,7 @@
 package com.pyg.manager.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +37,7 @@ public class BrandController {
 		return	brandService.save(brand);
 		
 	}
-	@RequestMapping("/del")
+	@RequestMapping("/delete")
 	public Result del(Long[] ids) {
 		try {
 			brandService.del(ids);
@@ -48,7 +49,18 @@ public class BrandController {
 	
 	//模糊查詢
 	@RequestMapping("/search")
-	public PageResult search(@RequestBody TbBrand brand,int page,int size){
-		return brandService.search(brand, page, size);		
+	public PageResult search(@RequestBody TbBrand brand,int page,int rows){
+		return brandService.findPage(brand, page, rows);		
+	}
+	
+	@RequestMapping("/findOne")
+	public TbBrand findOne(Long id) {
+		return brandService.findOne(id);
+	}
+	
+	
+	@RequestMapping("/selectOptionList")
+	public List<Map> selectOptionList() {
+		return brandService.selectOptionList();
 	}
 }

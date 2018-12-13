@@ -1,6 +1,7 @@
 package com.pyg.sellergoods.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,7 +38,7 @@ public class BrandServiceImpl implements BrandService {
 
 	// 模糊查询
 	@Override
-	public PageResult search(TbBrand brand, int pageNum, int pageSize) {
+	public PageResult findPage(TbBrand brand, int pageNum, int pageSize) {
 		
 		PageHelper.startPage(pageNum, pageSize);//分页	
 		
@@ -87,6 +88,17 @@ public class BrandServiceImpl implements BrandService {
 			brandMapper.deleteByPrimaryKey(id);
 		}
 
+	}
+
+	@Override
+	public TbBrand findOne(Long id) {
+		return brandMapper.selectByPrimaryKey(id);
+		
+	}
+	
+	
+	public List<Map> selectOptionList(){
+		return brandMapper.selectOptionList();
 	}
 
 }
